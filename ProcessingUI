@@ -1,0 +1,841 @@
+import processing.serial.*;
+
+Serial myPort;
+
+import controlP5.*;
+
+ControlP5 cp5;
+
+//sequence1
+int[] sequence1 = { 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000, 12000, 13000, 14000, 15000, 16000, 17000 };  // collection of trigger moments (in milliseconds) 
+int sequence1_index;                             // active index of the sequence list 
+int sequence1_start_time;                        // time at which sequence was started
+boolean sequence1IsActive = false;   // used to determine if the sequence is running
+
+//sequence2
+int[] sequence2 = { 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000, 4500, 5000, 5500 };  // collection of trigger moments (in milliseconds) 
+int sequence2_index;                             // active index of the sequence list 
+int sequence2_start_time;                        // time at which sequence was started
+boolean sequence2IsActive = false;               // used to determine if the sequence is running
+
+//sequence3
+int[] sequence3 = { 1000, 2000, 3000, 4000 };  // collection of trigger moments (in milliseconds) 
+int sequence3_index;                             // active index of the sequence list 
+int sequence3_start_time;                        // time at which sequence was started
+boolean sequence3IsActive = false;               // used to determine if the sequence is running
+
+
+int servoMin1 = 32;
+int servoMax1 = 81;
+int servoMin2 = 69;
+int servoMax2 = 21;
+int servoMin3 = 65;
+int servoMax3 = 5;
+int servoMin4 = 50;
+int servoMax4 = 5;
+int servoMin5 = 49;
+int servoMax5 = 85;
+int servoMin6 = 35;
+int servoMax6 = 86;
+int servoMin7 = 36;
+int servoMax7 = 80;
+int servoMin8 = 63;
+int servoMax8 = 0;
+int servoMin9 = 54;
+int servoMax9 = 5;
+int servoMin10 = 88;
+int servoMax10 = 23;
+int servoMin11 = 9;
+int servoMax11 = 68;
+int servoMin12 = 52;
+int servoMax12 = 8;
+int servoMin13 = 27;
+int servoMax13 = 98;
+
+int servo1Value = 0;
+int servo2Value = 0;
+int servo3Value = 0;
+int servo4Value = 0;
+int servo5Value = 0;
+int servo6Value = 0;
+int servo7Value = 0;
+int servo8Value = 0;
+int servo9Value = 0;
+int servo10Value = 0;
+int servo11Value = 0;
+int servo12Value = 0;
+int servo13Value = 0;
+
+int relay1State = 0;
+int relay2State = 0;
+int relay3State = 0;
+int relay4State = 0;
+int relay5State = 0;
+int relay6State = 0;
+
+int START_BYTE = 254;
+int END_BYTE = 255;
+
+Range range;
+
+void setup() {
+  size(1000, 800);
+  fill(255);
+  myPort = new Serial(this, Serial.list()[2], 9600);
+
+  //servo1
+  cp5 = new ControlP5(this);
+  range = cp5.addRange("Key: Q-W")
+    .setBroadcast(false) 
+    .setPosition(50, 50)
+    .setSize(400, 40)
+    .setHandleSize(20)
+    .setRange(0, 100)
+    .setRangeValues(32, 73)
+    .setBroadcast(true)
+    .setColorForeground(color(255, 40))
+    .setColorBackground(color(255, 40))  
+    ;
+  //servo2
+  cp5 = new ControlP5(this);
+  range = cp5.addRange("Key: A-S")
+    .setBroadcast(false) 
+    .setPosition(50, 100)
+    .setSize(400, 40)
+    .setHandleSize(20)
+    .setRange(0, 100)
+    .setRangeValues(21, 69)
+    .setBroadcast(true)
+    .setColorForeground(color(255, 40))
+    .setColorBackground(color(255, 40))  
+    ;
+  //servo3
+  cp5 = new ControlP5(this);
+  range = cp5.addRange("Key: Z-X")
+    .setBroadcast(false) 
+    .setPosition(50, 150)
+    .setSize(400, 40)
+    .setHandleSize(20)
+    .setRange(0, 100)
+    .setRangeValues(9, 50)
+    .setBroadcast(true)
+    .setColorForeground(color(255, 40))
+    .setColorBackground(color(255, 40))  
+    ;
+  //servo4
+  cp5 = new ControlP5(this);
+  range = cp5.addRange("Key: E-R")
+    .setBroadcast(false) 
+    .setPosition(50, 200)
+    .setSize(400, 40)
+    .setHandleSize(20)
+    .setRange(0, 100)
+    .setRangeValues(5, 65)
+    .setBroadcast(true)
+    .setColorForeground(color(255, 40))
+    .setColorBackground(color(255, 40))  
+    ;
+  //servo5
+  cp5 = new ControlP5(this);
+  range = cp5.addRange("Key: D-F")
+    .setBroadcast(false) 
+    .setPosition(50, 250)
+    .setSize(400, 40)
+    .setHandleSize(20)
+    .setRange(0, 100)
+    .setRangeValues(49, 85)
+    .setBroadcast(true)
+    .setColorForeground(color(255, 40))
+    .setColorBackground(color(255, 40))  
+    ;
+  //servo6
+  cp5 = new ControlP5(this);
+  range = cp5.addRange("Key: C-V")
+    .setBroadcast(false) 
+    .setPosition(50, 300)
+    .setSize(400, 40)
+    .setHandleSize(20)
+    .setRange(0, 100)
+    .setRangeValues(38, 86)
+    .setBroadcast(true)
+    .setColorForeground(color(255, 40))
+    .setColorBackground(color(255, 40))  
+    ;
+  //servo7
+  cp5 = new ControlP5(this);
+  range = cp5.addRange("Key: G-H")
+    .setBroadcast(false) 
+    .setPosition(50, 350)
+    .setSize(400, 40)
+    .setHandleSize(20)
+    .setRange(0, 100)
+    .setRangeValues(36, 84)
+    .setBroadcast(true)
+    .setColorForeground(color(255, 40))
+    .setColorBackground(color(255, 40))  
+    ;
+  noStroke();
+  //servo8
+  cp5 = new ControlP5(this);
+  range = cp5.addRange("Key: T-Y")
+    .setBroadcast(false) 
+    .setPosition(50, 400)
+    .setSize(400, 40)
+    .setHandleSize(20)
+    .setRange(0, 100)
+    .setRangeValues(0, 54)
+    .setBroadcast(true)
+    .setColorForeground(color(255, 40))
+    .setColorBackground(color(255, 40))  
+    ;
+  noStroke();
+  //servo9
+  cp5 = new ControlP5(this);
+  range = cp5.addRange("Key: B-N")
+    .setBroadcast(false) 
+    .setPosition(50, 450)
+    .setSize(400, 40)
+    .setHandleSize(20)
+    .setRange(0, 100)
+    .setRangeValues(5, 54)
+    .setBroadcast(true)
+    .setColorForeground(color(255, 40))
+    .setColorBackground(color(255, 40))  
+    ;
+  //servo10
+  cp5 = new ControlP5(this);
+  range = cp5.addRange("Key: U-I")
+    .setBroadcast(false) 
+    .setPosition(50, 500)
+    .setSize(400, 40)
+    .setHandleSize(20)
+    .setRange(0, 100)
+    .setRangeValues(23, 88)
+    .setBroadcast(true)
+    .setColorForeground(color(255, 40))
+    .setColorBackground(color(255, 40))  
+    ;
+  //servo11
+  cp5 = new ControlP5(this);
+  range = cp5.addRange("Key: J-K")
+    .setBroadcast(false) 
+    .setPosition(50, 550)
+    .setSize(400, 40)
+    .setHandleSize(20)
+    .setRange(0, 100)
+    .setRangeValues(9, 68)
+    .setBroadcast(true)
+    .setColorForeground(color(255, 40))
+    .setColorBackground(color(255, 40))  
+    ;
+  //servo12
+  cp5 = new ControlP5(this);
+  range = cp5.addRange("Key: O-P")
+    .setBroadcast(false) 
+    .setPosition(50, 600)
+    .setSize(400, 40)
+    .setHandleSize(20)
+    .setRange(0, 100)
+    .setRangeValues(8, 52)
+    .setBroadcast(true)
+    .setColorForeground(color(255, 40))
+    .setColorBackground(color(255, 40))  
+    ;
+  //servo13
+  cp5 = new ControlP5(this);
+  range = cp5.addRange("Key: L-:")
+    .setBroadcast(false) 
+    .setPosition(50, 650)
+    .setSize(400, 40)
+    .setHandleSize(20)
+    .setRange(0, 100)
+    .setRangeValues(27, 98)
+    .setBroadcast(true)
+    .setColorForeground(color(255, 40))
+    .setColorBackground(color(255, 40))  
+    ;
+}
+
+void draw() {
+  background(64, 0, 0);
+  text("key 1: relay: " + relay1State, 600, 150);
+  text("key 2: relay: " + relay2State, 600, 200);
+  text("key 3: relay: " + relay3State, 600, 250);
+  text("key 4: relay: " + relay4State, 600, 300);
+  text("key 5: relay: " + relay5State, 600, 350);
+  text("key 6: relay: " + relay6State, 600, 400);
+
+  if (sequence1IsActive || sequence2IsActive || sequence3IsActive ) {
+    background(0, 96, 0);
+  }
+
+  // only check sequence code if the sequence is set to active
+  if (sequence1IsActive) {
+    runSequence1();
+  } else {
+    text("sequence 1 SERVO inactive - press < to start", 600, 550);
+  }
+
+  // only check sequence code if the sequence is set to active
+  if (sequence2IsActive) {
+    runSequence2();
+  } else {
+    text("sequence 2 LED inactive - press > to start", 600, 600);
+  }
+
+  // only check sequence code if the sequence is set to active
+  if (sequence3IsActive) {
+    runSequence3();
+  } else {
+    text("sequence 3 SERVO/LED inactive - press ? to start", 600, 650);
+  }
+}
+
+void controlEvent(ControlEvent theControlEvent) {
+  //servo1
+  if (theControlEvent.isFrom("Key: Q-W")) {
+
+    servoMin1 = int(theControlEvent.getController().getArrayValue(0));
+    servoMax1 = int(theControlEvent.getController().getArrayValue(1));
+  }
+  //servo2
+  if (theControlEvent.isFrom("Key: A-S")) {
+
+    servoMax2 = int(theControlEvent.getController().getArrayValue(0));
+    servoMin2 = int(theControlEvent.getController().getArrayValue(1));
+  }
+  //servo3
+  if (theControlEvent.isFrom("Key: Z-X")) {
+
+    servoMax3 = int(theControlEvent.getController().getArrayValue(0));
+    servoMin3 = int(theControlEvent.getController().getArrayValue(1));
+  }
+  //servo4
+  if (theControlEvent.isFrom("Key: E-R")) {
+
+    servoMax4 = int(theControlEvent.getController().getArrayValue(0));
+    servoMin4 = int(theControlEvent.getController().getArrayValue(1));
+  }
+  //servo5
+  if (theControlEvent.isFrom("Key: D-F")) {
+
+    servoMin5 = int(theControlEvent.getController().getArrayValue(0));
+    servoMax5 = int(theControlEvent.getController().getArrayValue(1));
+  }
+  //servo6
+  if (theControlEvent.isFrom("Key: C-V")) {
+
+    servoMin6 = int(theControlEvent.getController().getArrayValue(0));
+    servoMax6 = int(theControlEvent.getController().getArrayValue(1));
+  }
+  //servo7
+  if (theControlEvent.isFrom("Key: G-H")) {
+
+    servoMin7 = int(theControlEvent.getController().getArrayValue(0));
+    servoMax7 = int(theControlEvent.getController().getArrayValue(1));
+  }
+  //servo8
+  if (theControlEvent.isFrom("Key: T-Y")) {
+
+    servoMax8 = int(theControlEvent.getController().getArrayValue(0));
+    servoMin8 = int(theControlEvent.getController().getArrayValue(1));
+  }
+  //servo9
+  if (theControlEvent.isFrom("Key: B-N")) {
+
+    servoMax9 = int(theControlEvent.getController().getArrayValue(0));
+    servoMin9 = int(theControlEvent.getController().getArrayValue(1));
+  }
+  //servo10
+  if (theControlEvent.isFrom("Key: U-I")) {
+
+    servoMin10 = int(theControlEvent.getController().getArrayValue(0));
+    servoMax10 = int(theControlEvent.getController().getArrayValue(1));
+  }
+  //servo11
+  if (theControlEvent.isFrom("Key: J-K")) {
+
+    servoMin11 = int(theControlEvent.getController().getArrayValue(0));
+    servoMax11 = int(theControlEvent.getController().getArrayValue(1));
+  }
+  //servo12
+  if (theControlEvent.isFrom("Key: O-P")) {
+
+    servoMax12 = int(theControlEvent.getController().getArrayValue(0));
+    servoMin12 = int(theControlEvent.getController().getArrayValue(1));
+  }
+  //servo13
+  if (theControlEvent.isFrom("Key: L-:")) {
+
+    servoMin13 = int(theControlEvent.getController().getArrayValue(0));
+    servoMax13 = int(theControlEvent.getController().getArrayValue(1));
+  }
+}
+
+void setServoControl(int which, int value) {
+  myPort.write(START_BYTE);
+  myPort.write(which);
+  myPort.write(value);
+  myPort.write(END_BYTE);
+}
+
+void keyReleased() {
+  // SERVO 1
+  if (key == 'q') {
+    servo1Value = servoMin1;
+    setServoControl(1, servo1Value);
+  }
+  if (key == 'w') {
+    servo1Value = servoMax1;
+    setServoControl(1, servo1Value);
+  }
+  // SERVO 2
+  if (key == 'a') {
+    servo2Value = servoMin2;
+    setServoControl(2, servo2Value);
+  }
+  if (key == 's') {
+    servo2Value = servoMax2;
+    setServoControl(2, servo2Value);
+  }
+  // SERVO 3
+  if (key == 'z') {
+    servo3Value = servoMin3;
+    setServoControl(3, servo3Value);
+  }
+  if (key == 'x') {
+    servo3Value = servoMax3;
+    setServoControl(3, servo3Value);
+  }
+  // SERVO 4
+  if (key == 'e') {
+    servo4Value = servoMin4;
+    setServoControl(4, servo4Value);
+  }
+  if (key == 'r') {
+    servo4Value = servoMax4;
+    setServoControl(4, servo4Value);
+  }
+  // SERVO 5
+  if (key == 'd') {
+    servo5Value = servoMin5;
+    setServoControl(5, servo5Value);
+  }
+  if (key == 'f') {
+    servo5Value = servoMax5;
+    setServoControl(5, servo5Value);
+  }
+  // SERVO 6
+  if (key == 'c') {
+    servo6Value = servoMin6;
+    setServoControl(6, servo6Value);
+  }
+  if (key == 'v') {
+    servo6Value = servoMax6;
+    setServoControl(6, servo6Value);
+  }
+  // SERVO 7
+  if (key == 'g') {
+    servo7Value = servoMin7;
+    setServoControl(7, servo7Value);
+  }
+  if (key == 'h') {
+    servo7Value = servoMax7;
+    setServoControl(7, servo7Value);
+  }
+  // SERVO 8
+  if (key == 't') {
+    servo8Value = servoMin8;
+    setServoControl(8, servo8Value);
+  }
+  if (key == 'y') {
+    servo8Value = servoMax8;
+    setServoControl(8, servo8Value);
+  }
+  // SERVO 9
+  if (key == 'b') {
+    servo9Value = servoMin9;
+    setServoControl(9, servo9Value);
+  }
+  if (key == 'n') {
+    servo9Value = servoMax9;
+    setServoControl(9, servo9Value);
+  }
+  // SERVO 10
+  if (key == 'u') {
+    servo10Value = servoMin10;
+    setServoControl(10, servo10Value);
+  }
+  if (key == 'i') {
+    servo10Value = servoMax10;
+    setServoControl(10, servo10Value);
+  }
+  // SERVO 11
+  if (key == 'j') {
+    servo11Value = servoMin11;
+    setServoControl(11, servo11Value);
+  }
+  if (key == 'k') {
+    servo11Value = servoMax11;
+    setServoControl(11, servo11Value);
+  }
+  // SERVO 12
+  if (key == 'o') {
+    servo12Value = servoMin12;
+    setServoControl(12, servo12Value);
+  }
+  if (key == 'p') {
+    servo12Value = servoMax12;
+    setServoControl(12, servo12Value);
+  }
+  // SERVO 13
+  if (key == 'l') {
+    servo13Value = servoMin13;
+    setServoControl(13, servo13Value);
+  }
+  if (key == ';') {
+    servo13Value = servoMax13;
+    setServoControl(13, servo13Value);
+  }
+  //relay1
+  if (key == '1') {
+    relay1State = 1 - relay1State; // sneaky way of changing between 0 and 1
+    setServoControl(21, relay1State);
+  }
+  //relay2
+  if (key == '2') {
+    relay2State = 1 - relay2State; // sneaky way of changing between 0 and 1
+    setServoControl(22, relay2State);
+  }
+  //relay3
+  if (key == '3') {
+    relay3State = 1 - relay3State; // sneaky way of changing between 0 and 1
+    setServoControl(23, relay3State);
+  }
+  //relay4
+  if (key == '4') {
+    relay4State = 1 - relay4State; // sneaky way of changing between 0 and 1
+    setServoControl(24, relay4State);
+  }
+  //relay5
+  if (key == '5') {
+    relay5State = 1 - relay5State; // sneaky way of changing between 0 and 1
+    setServoControl(25, relay5State);
+  }
+  //relay6
+  if (key == '6') {
+    relay6State = 1 - relay6State; // sneaky way of changing between 0 and 1
+    setServoControl(26, relay6State);
+  }
+  // sequence1
+  if (key == ',') {
+    println(",");
+    startSequence1();
+  }
+  // sequence2
+  if (key == '.') {
+    println(".");
+    startSequence2();
+  }
+  // sequence3
+  if (key == '/') {
+    println("/");
+    startSequence3();
+  }
+}
+
+//sequence1
+void runSequence1() {
+  text("sequence 1 active -> waiting to reach index " + sequence1_index, 10, 15);
+
+  // check if we've passed the activate-time for the current sequence point
+  if (millis() - sequence1_start_time > sequence1[sequence1_index]) {
+    println("reached sequence index " + sequence1_index);
+
+
+    switch (sequence1_index) {
+    case 0:
+      // event 1          
+      setServoControl(9, servoMin9);
+
+
+    case 1:
+      // event 2
+      setServoControl(9, servoMax9);
+
+
+    case 2:
+      // event 3
+      setServoControl(3, servoMin3);
+
+
+    case 3:
+      // event 4
+      setServoControl(3, servoMax3);
+
+
+    case 4:
+      // event 5
+      setServoControl(2, servoMin2);
+
+
+    case 5:
+      // event 6
+      setServoControl(2, servoMax2);
+
+
+    case 6:
+      // event 6
+      setServoControl(1, servoMin1);
+
+
+    case 7:
+      // event 6
+      setServoControl(1, servoMax1);
+
+
+    case 8:
+      // event 6
+      setServoControl(4, servoMin4);
+
+
+    case 9:
+      // event 6
+      setServoControl(4, servoMax4);
+
+    case 10:
+      // event 6
+      setServoControl(5, servoMin5);
+
+
+    case 11:
+      // event 6
+      setServoControl(5, servoMax5);
+
+
+    case 12:
+      // event 6
+      setServoControl(6, servoMin6);
+
+
+    case 13:
+      // event 6
+      setServoControl(6, servoMax6);
+
+    case 14:
+      // event 1          
+      setServoControl(7, servoMin7);
+
+
+    case 15:
+      // event 2
+      setServoControl(7, servoMax7);
+
+
+    case 16:
+      // event 3
+      setServoControl(8, servoMin8);
+
+
+    case 17:
+      // event 4
+      setServoControl(8, servoMax8);
+
+
+    case 18:
+      // event 5
+      setServoControl(10, servoMin10);
+
+
+    case 19:
+      // event 6
+      setServoControl(10, servoMax10);
+
+
+    case 20:
+      // event 6
+      setServoControl(11, servoMin11);
+
+
+    case 21:
+      // event 6
+      setServoControl(11, servoMax11);
+
+
+    case 22:
+      // event 6
+      setServoControl(12, servoMin12);
+
+    case 23:
+      // event 6
+      setServoControl(12, servoMax12);
+      
+      
+    case 24:
+      // event 6
+      setServoControl(13, servoMin13);
+
+    case 25:
+      // event 6
+      setServoControl(13, servoMax13);
+    }
+
+
+
+
+      // increase index for the next event
+      sequence1_index++;
+
+      // check that we can't go further than the amount of sequence points
+      if (sequence1_index >=  sequence1.length) {
+        println("finished sequence");
+        sequence1IsActive = false;
+      }
+    }
+  }
+
+  //sequence2
+  void runSequence2() {
+    text("sequence 2 active -> waiting to reach index " + sequence2_index, 10, 30);
+
+    // check if we've passed the activate-time for the current sequence point
+    if (millis() - sequence2_start_time > sequence2[sequence2_index]) {
+      println("reached sequence index " + sequence2_index);
+
+      // here we check what the index is with a switch-case and fire events based on that
+      switch (sequence2_index) {
+      case 0:        
+        relay6State = 1 - relay6State; 
+        setServoControl(26, relay6State);
+
+      case 1:
+        relay6State = 1 - relay6State; 
+        setServoControl(26, relay6State);
+
+      case 2:
+        relay5State = 1 - relay5State; 
+        setServoControl(25, relay5State);
+
+      case 3:
+        relay5State = 1 - relay5State; 
+        setServoControl(25, relay5State);
+
+      case 4:
+        relay2State = 1 - relay2State; 
+        setServoControl(22, relay2State);
+        break;
+      case 5:
+        relay2State = 1 - relay2State; 
+        setServoControl(22, relay2State);
+        break;
+      case 6:
+        relay1State = 1 - relay1State; 
+        setServoControl(21, relay1State);
+        break;
+      case 7:
+        relay1State = 1 - relay1State; 
+        setServoControl(21, relay1State);
+        break;
+      case 8:
+        relay3State = 1 - relay3State; 
+        setServoControl(23, relay1State);
+        break;
+      case 9:
+        relay3State = 1 - relay3State; 
+        setServoControl(23, relay3State);
+        break;
+      case 10:
+        relay4State = 1 - relay4State; 
+        setServoControl(24, relay4State);
+        break;
+      case 11:
+        relay4State = 1 - relay4State; 
+        setServoControl(24, relay4State);
+        break;
+      }
+
+      // increase index for the next event
+      sequence2_index++;
+
+      // check that we can't go further than the amount of sequence points
+      if (sequence2_index >=  sequence2.length) {
+        println("finished sequence");
+        sequence2IsActive = false;
+      }
+    }
+  }
+
+  //sequence3
+  void runSequence3() {
+    text("sequence 3 active -> waiting to reach index " + sequence3_index, 10, 45);
+
+    // check if we've passed the activate-time for the current sequence point
+    if (millis() - sequence3_start_time > sequence3[sequence3_index]) {
+      println("reached sequence index " + sequence3_index);
+
+      // here we check what the index is with a switch-case and fire events based on that
+      switch (sequence3_index) {
+      case 0:        
+        setServoControl(9, servoMax9);
+        setServoControl(26, relay6State);
+        break;
+      case 1:
+        setServoControl(26, relay6State);
+        setServoControl(25, relay5State);
+        setServoControl(24, relay4State);
+        break;
+      case 2:
+        setServoControl(26, relay6State);
+        break;
+      }
+
+      sequence3_index++;
+      if (sequence1_index >=  sequence3.length) {
+        println("finished sequence");
+        sequence3IsActive = false;
+      }
+    }
+  }
+
+  void startSequence1() {
+    sequence1_index = 0;
+
+    // store the moment the sequence was started
+    sequence1_start_time = millis();
+
+    // set the sequence as active
+    sequence1IsActive = true;
+  }
+
+  void startSequence2() {
+    // set the index (aka step) to 0
+    sequence2_index = 0;
+
+    // store the moment the sequence was started
+    sequence2_start_time = millis();
+
+    // set the sequence as active
+    sequence2IsActive = true;
+  }
+
+  void startSequence3() {
+    // set the index (aka step) to 0
+    sequence3_index = 0;
+
+    // store the moment the sequence was started
+    sequence3_start_time = millis();
+
+    // set the sequence as active
+    sequence3IsActive = true;
+  }
+
+  void exit() {
+    // set all servos off
+    setServoControl(50, 0);
+
+    // close serial port
+    myPort.stop();
+
+    // close Processing sketch
+    super.exit();
+  }
