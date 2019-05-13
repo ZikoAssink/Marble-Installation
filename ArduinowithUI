@@ -1,0 +1,227 @@
+
+#include <Wire.h>
+#include <Adafruit_PWMServoDriver.h>
+
+Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
+
+#define SERVOMIN  110 // this is the 'minimum' pulse length count (out of 4096)
+#define SERVOMAX  670 // this is the 'maximum' pulse length count (out of 4096)
+
+int relay1 = 2;
+int relay2 = 3;
+int relay3 = 4;
+int relay4 = 5;
+int relay5 = 6;
+int relay6 = 7;
+uint8_t servonum1 = 0;
+uint8_t servonum2 = 1;
+uint8_t servonum3 = 2;
+uint8_t servonum4 = 3;
+uint8_t servonum5 = 4;
+uint8_t servonum6 = 5;
+uint8_t servonum7 = 6;
+uint8_t servonum8 = 7;
+uint8_t servonum9 = 8;
+uint8_t servonum10 = 9;
+uint8_t servonum11 = 10;
+uint8_t servonum12 = 11;
+uint8_t servonum13 = 12;
+
+
+void setup() {
+  Serial.begin(9600);
+
+  pwm.begin();
+
+  pwm.setPWMFreq(60);  // Analog servos run at ~60 Hz updates
+
+  pinMode(relay1, OUTPUT);
+  pinMode(relay2, OUTPUT);
+  pinMode(relay3, OUTPUT);
+  pinMode(relay4, OUTPUT);
+  pinMode(relay5, OUTPUT);
+  pinMode(relay6, OUTPUT);
+  digitalWrite(relay1, LOW);
+  digitalWrite(relay2, LOW);
+  digitalWrite(relay3, LOW);
+  digitalWrite(relay4, LOW);
+  digitalWrite(relay5, LOW);
+  digitalWrite(relay6, LOW);
+}
+
+byte START_BYTE = 254;
+byte END_BYTE = 255;
+
+void loop() {
+  readSerial();
+
+  delay(10);
+}
+
+void readSerial() {
+  if (Serial.available() > 3) {
+    byte in = Serial.read();
+    if (in == START_BYTE) {
+      byte which = Serial.read();
+      byte value = Serial.read();
+
+      // servo #1
+      if (which == 1) {
+        pwm.setPWM(servonum1, 0, map(value, 0, 100, SERVOMIN, SERVOMAX));
+      }
+
+      // servo #2
+      if (which == 2) {
+        pwm.setPWM(servonum2, 0, map(value, 0, 100, SERVOMIN, SERVOMAX));
+      }
+
+      // servo #3
+      if (which == 3) {
+        pwm.setPWM(servonum3, 0, map(value, 0, 100, SERVOMIN, SERVOMAX));
+      }
+      // servo #4
+      if (which == 4) {
+        pwm.setPWM(servonum4, 0, map(value, 0, 100, SERVOMIN, SERVOMAX));
+      }
+
+      // servo #5
+      if (which == 5) {
+        pwm.setPWM(servonum5, 0, map(value, 0, 100, SERVOMIN, SERVOMAX));
+      }
+
+      // servo #6
+      if (which == 6) {
+        pwm.setPWM(servonum6, 0, map(value, 0, 100, SERVOMIN, SERVOMAX));
+      }
+      // servo #7
+      if (which == 7) {
+        pwm.setPWM(servonum7, 0, map(value, 0, 100, SERVOMIN, SERVOMAX));
+      }
+      // servo #8
+      if (which == 8) {
+        pwm.setPWM(servonum8, 0, map(value, 0, 100, SERVOMIN, SERVOMAX));
+      }
+      // servo #9
+      if (which == 9) {
+        pwm.setPWM(servonum9, 0, map(value, 0, 100, SERVOMIN, SERVOMAX));
+      }
+      // servo #10
+      if (which == 10) {
+        pwm.setPWM(servonum10, 0, map(value, 0, 100, SERVOMIN, SERVOMAX));
+      }
+      // servo #11
+      if (which == 11) {
+        pwm.setPWM(servonum11, 0, map(value, 0, 100, SERVOMIN, SERVOMAX));
+      }
+      // servo #12
+      if (which == 12) {
+        pwm.setPWM(servonum12, 0, map(value, 0, 100, SERVOMIN, SERVOMAX));
+      }
+      // servo #13
+      if (which == 13) {
+        pwm.setPWM(servonum13, 0, map(value, 0, 100, SERVOMIN, SERVOMAX));
+      }
+
+      // relay #1
+      if (which == 21) {
+
+        if (value == 1) {
+          digitalWrite (relay1, LOW);
+          delay(10);
+        }  else if (value == 0) {
+          digitalWrite (relay1, HIGH);
+          delay(10);
+        }
+
+      }
+
+      // relay #2
+      if (which == 22) {
+
+        if (value == 1) {
+          digitalWrite (relay2, LOW);
+          delay(10);
+
+        }  else if (value == 0) {
+          digitalWrite (relay2, HIGH);
+          delay(10);
+        }
+      }
+
+      // relay #3
+      if (which == 23) {
+
+        if (value == 1) {
+          digitalWrite (relay3, LOW);
+          delay(10);
+        }  else if (value == 0) {
+          digitalWrite (relay3, HIGH);
+          delay(10);
+        }
+      }
+
+      // relay #4
+      if (which == 24) {
+
+        if (value == 1) {
+          digitalWrite (relay4, LOW);
+          delay(10);
+        }  else if (value == 0) {
+          digitalWrite (relay4, HIGH);
+          delay(10);
+        }
+      }
+      // relay #5
+      if (which == 25) {
+
+        if (value == 1) {
+          digitalWrite (relay5, LOW);
+          delay(10);
+        }  else if (value == 0) {
+          digitalWrite (relay5, HIGH);
+          delay(10);
+        }
+      }
+
+      // relay #3
+      if (which == 26) {
+
+        if (value == 1) {
+          digitalWrite (relay6, LOW);
+          delay(10);
+        }  else if (value == 0) {
+          digitalWrite (relay6, HIGH);
+          delay(10);
+        }
+      }
+
+      // special use case -> alles uit
+      if (which == 50) {
+        pwm.setPWM(servonum1, 0, 0);
+        pwm.setPWM(servonum2, 0, 0);
+        pwm.setPWM(servonum3, 0, 0);
+        pwm.setPWM(servonum4, 0, 0);
+        pwm.setPWM(servonum5, 0, 0);
+        pwm.setPWM(servonum6, 0, 0);
+        pwm.setPWM(servonum7, 0, 0);
+        pwm.setPWM(servonum8, 0, 0);
+        pwm.setPWM(servonum9, 0, 0);
+        pwm.setPWM(servonum10, 0, 0);
+        pwm.setPWM(servonum11, 0, 0);
+        pwm.setPWM(servonum12, 0, 0);
+        pwm.setPWM(servonum13, 0, 0);
+
+        digitalWrite (relay1, HIGH);
+        digitalWrite (relay2, HIGH);
+        digitalWrite (relay3, HIGH);
+        digitalWrite (relay4, HIGH);
+        digitalWrite (relay5, HIGH);
+        digitalWrite (relay6, HIGH);
+      }
+
+      while (Serial.available() > 0) {
+        Serial.read();
+      }
+    }
+  }
+}
