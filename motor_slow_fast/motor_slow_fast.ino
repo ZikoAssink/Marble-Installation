@@ -35,8 +35,8 @@ void loop() {
 
 void sweep(int which, int motorSpeed){
   float pos;
-  for (pos = 0; pos <= 360; pos += motorSpeed) { // goes from 0 degrees to 180 degrees
-    pwm.setPWM(servos[which-1], 0, map(pos, 0, 100, SERVOMIN, SERVOMAX));              // tell servo to go to position in variable 'pos'
+  for (pos = 0; pos <= 360; pos += motorSpeed) { // goes from 0 degrees to 360 degrees
+    pwm.setPWM(servos[which-1], 0, map(pos, 0, 360, SERVOMIN, SERVOMAX));              // tell servo to go to position in variable 'pos'
     delay(25);                       // waits 15ms for the servo to reach the position
   }
 }
